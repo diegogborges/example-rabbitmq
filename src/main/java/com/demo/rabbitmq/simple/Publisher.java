@@ -1,9 +1,8 @@
-package com.demo.rabbitmq;
+package com.demo.rabbitmq.simple;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.DeliverCallback;
 
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -11,19 +10,19 @@ import java.util.concurrent.TimeoutException;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class Consumer {
+public class Publisher {
 
   public static void main(String[] args) throws IOException, TimeoutException {
     ConnectionFactory connectionFactory = new ConnectionFactory();
     Connection connection = connectionFactory.newConnection();
     Channel channel = connection.createChannel();
 
-    DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-      String message = new String(delivery.getBody());
-      System.out.println("Message received = " + message);
-    };
-    channel.basicConsume("Queue-1", true, deliverCallback, consumerTag -> {
-    });
+    String message = "My first message from RabbitMQ";
+
+    channel.basicPublish("", "Queue-1", null, message.getBytes());
+
+    channel.close();
+    connection.close();
   }
 
 }
